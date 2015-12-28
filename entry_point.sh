@@ -11,7 +11,7 @@ if [ ! -z "$SE_OPTS" ]; then
 fi
 
 xvfb-run --server-args="$DISPLAY -screen 0 $GEOMETRY -ac +extension RANDR" \
-  java ${JAVA_OPTS} -jar /opt/selenium/selenium-server-standalone.jar \
+  selenium-standalone start \
   ${SE_OPTS} &
 NODE_PID=$!
 
