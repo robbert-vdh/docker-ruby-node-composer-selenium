@@ -1,19 +1,8 @@
 #!/bin/bash
-export GEOMETRY="$SCREEN_WIDTH""x""$SCREEN_HEIGHT""x""$SCREEN_DEPTH"
 
-function shutdown {
-  kill -s SIGTERM $NODE_PID
-  wait $NODE_PID
-}
+export DISPLAY=:99
+nohup Xvfb :99 -shmem -screen 0 1366x768x16 > /dev/null 2>&1 &
+nohup x11vnc -passwd secret -display :99 -N -forever > /dev/null 2>&1 &
 
-if [ ! -z "$SE_OPTS" ]; then
-  echo "appending selenium options: ${SE_OPTS}"
-fi
-
-xvfb-run --server-args="$DISPLAY -screen 0 $GEOMETRY -ac +extension RANDR" \
-  selenium-standalone start \
-  ${SE_OPTS} &
-NODE_PID=$!
-
-trap shutdown SIGTERM SIGINT
-wait $NODE_PID
+# selenium must be started by a non-root user otherwise chrome can't start
+su - seleuser -c "selenium-standalone start"
